@@ -1,6 +1,11 @@
 const addPlantBtn = document.getElementById("addPlantBtn");
 const plantsContainer = document.getElementById("plants");
 
+const plantSearchInput =
+    document.getElementById("plantSearchInput");
+
+let searchKeyword = "";
+
 const DB_NAME = "plantPhotoDB";
 const DB_VERSION = 1;
 const PHOTO_STORE = "photos";
@@ -122,7 +127,17 @@ async function renderPlants() {
 
     plantsContainer.innerHTML = "";
 
-    for (const plant of plants.filter(plant => !plant.archived)) {
+    const visiblePlants = plants.filter(plant => {
+    const matchArchive = !plant.archived;
+    const matchSearch =
+        plant.name
+            .toLowerCase()
+            .includes(searchKeyword.toLowerCase());
+
+    return matchArchive && matchSearch;
+});
+
+for (const plant of visiblePlants) {
 
         const plantCard =
             document.createElement("div");
@@ -271,6 +286,11 @@ addPlantBtn.addEventListener("click", () => {
 
 });
 
+plantSearchInput.addEventListener("input", () => {
+    searchKeyword = plantSearchInput.value.trim();
+    renderPlants();
+});
+
 renderPlants();
 
 const exportBackupBtn = document.getElementById("exportBackupBtn");
@@ -392,3 +412,4 @@ importBackupBtn.addEventListener("click", () => {
 
     input.click();
 });
+
