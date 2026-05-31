@@ -196,13 +196,23 @@ async function renderPlants() {
             }
         }
 
-        plantCard.innerHTML = `
-            ${thumbHtml}
-            <div class="plant-name">${plant.name}</div>
-            <div class="plant-updated">${latestDate}</div>
-            <div class="plant-count">記録 ${records.length}件</div>
-            <button class="deletePlantBtn">🗑完全削除</button>
-        `;
+        let photoCount = 0;
+
+records.forEach(record => {
+    if (record.photos) {
+        photoCount += record.photos.length;
+    }
+});
+
+plantCard.innerHTML = `
+    ${thumbHtml}
+    <div class="plant-name">${plant.name}</div>
+    <div class="plant-updated">${latestDate}</div>
+    <div class="plant-count">
+        記録 ${records.length}件・写真 ${photoCount}枚
+    </div>
+    <button class="deletePlantBtn">🗑完全削除</button>
+`;
 
         plantCard.style.cursor = "pointer";
 
