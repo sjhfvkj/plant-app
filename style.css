@@ -369,3 +369,9 @@ button {
 .backup-actions button {
     flex: 1;
 }
+
+.backup-actions button {
+    width: 50% !important;
+    flex: 1 !important;
+    margin-top: 0 !important;
+}
