@@ -1,280 +1,46 @@
-body{
-    font-family:sans-serif;
-    padding:20px;
-    background:#f5f5f5;
-}
-
-h1{
-    text-align:center;
-}
-
-#plants{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-}
-
-.plant-card{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    text-align:center;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
-
-button{
-    width:100%;
-    margin-top:20px;
-    padding:15px;
-    font-size:16px;
-}
-.photo-row{
-    display:flex;
-    justify-content:center;
-    gap:8px;
-    margin-bottom:12px;
-}
-
-.record-photo{
-    width:100px;
-    height:100px;
-    object-fit:cover;
-    border-radius:10px;
-}
-.photo-modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.85);
-    z-index:999;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:15px;
-    padding:20px;
-}
-
-.photo-modal img{
-    max-width:90%;
-    max-height:70vh;
-    border-radius:12px;
-}
-
-.photo-modal button{
-    max-width:300px;
-}
-.record-info{
-    margin:8px 0;
-    font-size:18px;
-    text-align:center;
-}
-
-.record-memo{
-    margin-top:8px;
-    font-size:18px;
-    text-align:center;
-    white-space:pre-wrap;
-}
-.plant-card{
-    background:white;
-    border-radius:16px;
-    padding:16px;
-    margin-bottom:16px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-.record-date{
-    font-size:24px;
-    font-weight:bold;
-    text-align:center;
-    margin-bottom:12px;
-}
-
-.record-actions{
-    display:flex;
-    gap:8px;
-    margin-top:12px;
-}
-
-.record-actions button{
-    flex:1;
-    padding:8px;
-    font-size:14px;
-}
-
-.plant-thumb{
-    width:100%;
-    height:220px;
-    object-fit:contain;
-    border-radius:12px;
-    margin-bottom:8px;
-    background:white;
-}
-
-.plant-thumb.placeholder{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#eef5ee;
-    font-size:40px;
-}
-
-.plant-name{
-    font-weight:bold;
-    text-align:center;
-}
-
-.plant-updated{
-    margin-top:4px;
-    font-size:13px;
-    color:#666;
-    text-align:center;
-}
-
-.sort-box{
-    display:flex;
-    gap:8px;
-    margin:12px 0;
-}
-
-.sort-box button{
-    flex:1;
-    padding:8px;
-    font-size:14px;
-}
-
-.plant-count{
-    margin-top:2px;
-    font-size:12px;
-    color:#888;
-    text-align:center;
-}
-
-/* 記録ページ：タイムライン風 */
-#records{
-    position:relative;
-    margin-top:20px;
-}
-
-#records::before{
-    content:"";
-    position:absolute;
-    left:18px;
-    top:0;
-    bottom:0;
-    width:3px;
-    background:#cfe3cf;
-    border-radius:999px;
-}
-
-#records .plant-card{
-    position:relative;
-    margin-left:28px;
-    text-align:left;
-    border-radius:18px;
-    padding:16px;
-}
-
-#records .plant-card::before{
-    content:"";
-    position:absolute;
-    left:-22px;
-    top:22px;
-    width:15px;
-    height:15px;
-    background:#6fa96f;
-    border:3px solid white;
-    border-radius:50%;
-    box-shadow:0 2px 5px rgba(0,0,0,0.15);
-}
-
-.record-date{
-    display:inline-block;
-    background:#e6f4e6;
-    color:#2f5f2f;
-    padding:6px 12px;
-    border-radius:999px;
-    font-size:16px;
-    font-weight:bold;
-    margin-bottom:12px;
-}
-
-.photo-row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    justify-content:initial;
-}
-
-.record-photo{
-    width:100%;
-    height:150px;
-    object-fit:cover;
-    border-radius:14px;
-}
-
-.record-info,
-.record-memo{
-    text-align:left;
-    font-size:15px;
-}
-
-.record-actions{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:6px;
-}
-
-.record-actions button{
-    margin-top:0;
-    padding:10px 6px;
-    font-size:13px;
-    border-radius:10px;
-}
-
-#plantName{
-    position:sticky;
-    top:0;
-    z-index:100;
-    background:#f5f5f5;
-    padding:14px 0 12px;
-    margin:0 0 12px;
-    border-bottom:1px solid #dbe8db;
-    font-size:26px;
-}
-
-/* 記録追加ボタンを右下に固定 */
-#addRecordBtn{
-    position:fixed;
-    right:18px;
-    bottom:18px;
-    z-index:200;
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    padding:0;
-    margin:0;
-    font-size:0;
-    background:#6fa96f;
-    color:white;
-    border:none;
-    box-shadow:0 4px 12px rgba(0,0,0,0.25);
-}
-
-#addRecordBtn::before{
-    content:"+";
-    font-size:38px;
-    line-height:64px;
-    font-weight:bold;
-}
-
-#addRecordBtn:active{
-    transform:scale(0.95);
-}
-
 body {
+    font-family: sans-serif;
+    background: #f5f5f5;
     padding: 16px;
     box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+button {
+    border: none;
+    border-radius: 999px;
+    padding: 12px;
+    font-size: 16px;
+    background: #e6f4e6;
+}
+
+.main-add-btn,
+.archive-link button {
+    width: 100%;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.backup-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.backup-actions button {
+    flex: 1;
+    width: auto;
+}
+
+#plants {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 }
 
 .plant-card {
@@ -282,96 +48,198 @@ body {
     border-radius: 18px;
     padding: 16px;
     margin: 16px 0;
+    text-align: center;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     overflow: hidden;
 }
 
 .plant-thumb {
     width: 100%;
-    height: 180px;
+    height: 170px;
     object-fit: cover;
     border-radius: 14px;
     display: block;
+    margin-bottom: 8px;
+    background: white;
 }
 
-.record-photo {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 12px;
+.plant-thumb.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef5ee;
+    font-size: 40px;
+}
+
+.plant-name {
+    font-weight: bold;
+    text-align: center;
+}
+
+.plant-updated {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+}
+
+.plant-count {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+}
+
+.deletePlantBtn {
+    width: 100%;
+    margin-top: 10px;
+    background: #ffe7e7;
+}
+
+.sort-box {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.sort-box button {
+    flex: 1;
+}
+
+#plantName {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #f5f5f5;
+    padding: 14px 0 12px;
+    margin: 0 0 12px;
+    border-bottom: 1px solid #dbe8db;
+    font-size: 26px;
+}
+
+#records {
+    position: relative;
+    margin-top: 20px;
+}
+
+#records::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #cfe3cf;
+    border-radius: 999px;
+}
+
+#records .plant-card {
+    position: relative;
+    margin-left: 28px;
+    text-align: left;
+}
+
+#records .plant-card::before {
+    content: "";
+    position: absolute;
+    left: -22px;
+    top: 22px;
+    width: 15px;
+    height: 15px;
+    background: #6fa96f;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.record-date {
+    display: inline-block;
+    background: #e6f4e6;
+    color: #2f5f2f;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
 }
 
 .photo-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.record-photo {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 14px;
+}
+
+.record-info,
+.record-memo {
+    text-align: left;
+    font-size: 15px;
+    margin-top: 8px;
+    white-space: pre-wrap;
 }
 
 .record-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-top: 12px;
 }
 
-button {
-    border: none;
-    border-radius: 999px;
-    padding: 8px 12px;
+.record-actions button {
+    padding: 10px 6px;
+    font-size: 13px;
+    border-radius: 10px;
 }
 
-@media (max-width: 600px) {
-    h1 {
-        font-size: 40px;
-        line-height: 1.2;
-    }
-
-    .plant-thumb {
-        height: 170px;
-    }
-
-    .record-photo {
-        width: calc(50% - 6px);
-        height: 140px;
-    }
-
-    .photo-row {
-        gap: 12px;
-    }
+#addRecordBtn {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 200;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+    background: #6fa96f;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
-.main-add-btn {
+#addRecordBtn::before {
+    content: "+";
+    font-size: 38px;
+    line-height: 64px;
+    font-weight: bold;
+}
+
+.photo-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+}
+
+.photo-modal img {
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 12px;
+}
+
+.photo-modal button {
     width: 100%;
-    font-size: 20px;
-    padding: 14px;
-    margin-bottom: 12px;
-}
-
-.sub-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.sub-buttons button {
-    flex: 1;
-}
-
-.archive-link button {
-    width: 100%;
-}
-
-.backup-actions {
-    display: flex;
-    gap: 12px;
-    margin: 0 0 18px;
-}
-
-.backup-actions button {
-    flex: 1;
-}
-
-.backup-actions button {
-    width: 50% !important;
-    flex: 1 !important;
-    margin-top: 0 !important;
+    max-width: 300px;
 }
