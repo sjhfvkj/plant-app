@@ -359,3 +359,13 @@ button {
 .archive-link button {
     width: 100%;
 }
+
+.backup-actions {
+    display: flex;
+    gap: 12px;
+    margin: 0 0 18px;
+}
+
+.backup-actions button {
+    flex: 1;
+}
