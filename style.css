@@ -244,14 +244,44 @@ button {
     max-width: 300px;
 }
 
+/* 全体ボタンを少し大きく見やすく */
+button {
+    min-height: 58px;
+    font-size: 18px;
+    padding: 14px 18px;
+}
+
+/* 植物追加・アーカイブ */
+.main-add-btn,
+.archive-link button {
+    min-height: 64px;
+    font-size: 20px;
+}
+
+/* バックアップ・復元 */
+.backup-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.backup-actions button {
+    width: 100%;
+    min-height: 58px;
+    font-size: 18px;
+}
+
+/* 検索ボックス */
 .plant-search {
     width: 100%;
     box-sizing: border-box;
-    padding: 14px 16px;
+    height: 56px;
+    padding: 0 22px;
     margin: 0 0 14px;
     border: none;
     border-radius: 999px;
-    font-size: 16px;
+    font-size: 18px;
     background: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
