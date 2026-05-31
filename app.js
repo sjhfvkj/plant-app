@@ -6,6 +6,8 @@ const plantSearchInput =
 
 let searchKeyword = "";
 
+let renderId = 0;
+
 const DB_NAME = "plantPhotoDB";
 const DB_VERSION = 1;
 const PHOTO_STORE = "photos";
@@ -125,19 +127,24 @@ function savePlants() {
 
 async function renderPlants() {
 
+    renderId++;
+    const currentRenderId = renderId;
+
     plantsContainer.innerHTML = "";
 
     const visiblePlants = plants.filter(plant => {
-    const matchArchive = !plant.archived;
-    const matchSearch =
-        plant.name
-            .toLowerCase()
-            .includes(searchKeyword.toLowerCase());
+        const matchArchive = !plant.archived;
+        const matchSearch =
+            plant.name
+                .toLowerCase()
+                .includes(searchKeyword.toLowerCase());
 
-    return matchArchive && matchSearch;
-});
+        return matchArchive && matchSearch;
+    });
 
-for (const plant of visiblePlants) {
+    for (const plant of visiblePlants) {
+
+        if (currentRenderId !== renderId) return;
 
         const plantCard =
             document.createElement("div");
@@ -261,6 +268,8 @@ for (const plant of visiblePlants) {
                 "plant.html?name=" +
                 encodeURIComponent(plant.name);
         });
+
+if (currentRenderId !== renderId) return;
 
         plantsContainer.appendChild(plantCard);
     }
