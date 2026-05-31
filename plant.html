@@ -98,11 +98,108 @@ function saveRecords(records) {
 }
 
 function getPhotoSrc(photo) {
-    return typeof photo === "string" ? photo : photo.src;
+    if (typeof photo === "string") {
+        return photo;
+    }
+
+    if (photo.src) {
+        return photo.src;
+    }
+
+    return "";
 }
 
 function getPhotoDate(photo, fallbackDate) {
     return typeof photo === "string" ? fallbackDate : photo.date || fallbackDate;
+}
+
+const DB_NAME = "plantPhotoDB";
+const DB_VERSION = 1;
+const PHOTO_STORE = "photos";
+
+function openPhotoDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = () => {
+            const db = request.result;
+
+            if (!db.objectStoreNames.contains(PHOTO_STORE)) {
+                db.createObjectStore(PHOTO_STORE, {
+                    keyPath: "id"
+                });
+            }
+        };
+
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+
+        request.onerror = () => {
+            reject(request.error);
+        };
+    });
+}
+
+async function savePhotoToDB(src) {
+    const db = await openPhotoDB();
+
+    const photo = {
+        id: Date.now().toString() + Math.random().toString(16).slice(2),
+        src: src
+    };
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PHOTO_STORE, "readwrite");
+        const store = transaction.objectStore(PHOTO_STORE);
+
+        store.add(photo);
+
+        transaction.oncomplete = () => {
+            resolve(photo.id);
+        };
+
+        transaction.onerror = () => {
+            reject(transaction.error);
+        };
+    });
+}
+
+async function getPhotoFromDB(id) {
+    const db = await openPhotoDB();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PHOTO_STORE, "readonly");
+        const store = transaction.objectStore(PHOTO_STORE);
+        const request = store.get(id);
+
+        request.onsuccess = () => {
+            resolve(request.result ? request.result.src : "");
+        };
+
+        request.onerror = () => {
+            reject(request.error);
+        };
+    });
+}
+
+async function deletePhotoFromDB(id) {
+    const db = await openPhotoDB();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PHOTO_STORE, "readwrite");
+        const store = transaction.objectStore(PHOTO_STORE);
+
+        store.delete(id);
+
+        transaction.oncomplete = () => {
+            resolve();
+        };
+
+        transaction.onerror = () => {
+            reject(transaction.error);
+        };
+    });
 }
 
 function compressImage(file, maxWidth = 700, quality = 0.45) {
@@ -180,7 +277,8 @@ const displayRecords = [...records].sort((a, b) => {
         const imagesHtml = record.photos
             .map((photo, photoIndex) => `
                 <img 
-                    src="${getPhotoSrc(photo)}" 
+                    src="${getPhotoSrc(photo) || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22150%22%3E%3Crect width=%22200%22 height=%22150%22 fill=%22%23eef5ee%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-size=%2220%22%3E🌱%3C/text%3E%3C/svg%3E'}"
+data-photo-id="${photo.id || ''}"
                     class="record-photo"
                     data-record-index="${recordIndex}"
                     data-photo-index="${photoIndex}"
@@ -255,6 +353,15 @@ const displayRecords = [...records].sort((a, b) => {
             renderRecords();
         });
 
+card.querySelectorAll(".record-photo").forEach(async img => {
+    const photoId = img.dataset.photoId;
+
+    if (photoId) {
+        const src = await getPhotoFromDB(photoId);
+        img.src = src;
+    }
+});
+
         recordsContainer.appendChild(card);
     });
 
@@ -280,25 +387,18 @@ function selectPhotos(recordIndex) {
 
         for (const file of files) {
             const compressedPhoto = await compressImage(file);
+            const photoId = await savePhotoToDB(compressedPhoto);
 
             records[recordIndex].photos.push({
-                src: compressedPhoto,
+                id: photoId,
                 date: records[recordIndex].date
             });
         }
 
-        try {
-            saveRecords(records);
-            renderRecords();
-            alert("写真を追加しました！");
-        } catch (error) {
-            console.error(error);
-            alert(
-                "写真を保存できませんでした。\n\n" +
-                "保存容量がいっぱいです。\n" +
-                "古い写真を削除するか、圧縮サイズをもっと小さくします。"
-            );
-        }
+        saveRecords(records);
+        renderRecords();
+
+        alert("写真を追加しました！");
     });
 
     input.click();
@@ -345,58 +445,44 @@ closeModalBtn.addEventListener("click", () => {
     photoModal.style.display = "none";
 });
 
-setCoverBtn.addEventListener(
-    "click",
-    () => {
+setCoverBtn.addEventListener("click", async () => {
+    const records = loadRecords();
 
-        const records =
-            loadRecords();
+    const selectedPhoto =
+        records[currentRecordIndex].photos[currentPhotoIndex];
 
-        const selectedPhoto =
-            records[
-                currentRecordIndex
-            ].photos[
-                currentPhotoIndex
-            ];
+    let selectedPhotoSrc = getPhotoSrc(selectedPhoto);
 
-const selectedPhotoSrc =
-    getPhotoSrc(selectedPhoto);
-
-        const plants =
-            JSON.parse(
-                localStorage.getItem(
-                    "plants"
-                )
-            ) || [];
-
-        const targetPlant =
-            plants.find(
-                plant =>
-                    plant.name === plantName
-            );
-
-        if(!targetPlant)
-            return;
-
-        targetPlant.coverPhoto =
-    selectedPhotoSrc;
-
-        localStorage.setItem(
-            "plants",
-            JSON.stringify(plants)
-        );
-
-        alert(
-            "表紙写真を設定しました⭐"
-        );
-
+    if (!selectedPhotoSrc && selectedPhoto.id) {
+        selectedPhotoSrc = await getPhotoFromDB(selectedPhoto.id);
     }
-);
 
-deletePhotoBtn.addEventListener("click", () => {
+    const plants =
+        JSON.parse(localStorage.getItem("plants")) || [];
+
+    const targetPlant =
+        plants.find(plant => plant.name === plantName);
+
+    if (!targetPlant) return;
+
+    targetPlant.coverPhoto = selectedPhotoSrc;
+
+    localStorage.setItem("plants", JSON.stringify(plants));
+
+    alert("表紙写真を設定しました⭐");
+});
+
+deletePhotoBtn.addEventListener("click", async () => {
     if (!confirm("この写真を削除しますか？")) return;
 
     const records = loadRecords();
+
+    const deletedPhoto =
+        records[currentRecordIndex].photos[currentPhotoIndex];
+
+    if (deletedPhoto.id) {
+        await deletePhotoFromDB(deletedPhoto.id);
+    }
 
     records[currentRecordIndex].photos.splice(currentPhotoIndex, 1);
 
