@@ -160,8 +160,7 @@ async function renderArchivedPlants() {
         const { latestPhoto, latestDate } =
             await getLatestPhotoAndDate(plant);
 
-        const displayPhoto =
-            plant.coverPhoto || latestPhoto;
+        const displayPhoto = latestPhoto;
 
         card.innerHTML = `
             ${
