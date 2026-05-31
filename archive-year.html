@@ -25,18 +25,86 @@ if (!year) {
 document.getElementById("yearTitle").textContent = year + "年";
 
 const plantsContainer = document.getElementById("plants");
-const plants = JSON.parse(localStorage.getItem("plants")) || [];
+let plants = JSON.parse(localStorage.getItem("plants")) || [];
 
 const archivedPlants = plants.filter(plant => {
     const plantYear = new Date(plant.startDate).getFullYear();
     return plant.archived && plantYear === year;
 });
 
-function getPhotoSrc(photo) {
-    return typeof photo === "string" ? photo : photo.src;
+const DB_NAME = "plantPhotoDB";
+const DB_VERSION = 1;
+const PHOTO_STORE = "photos";
+
+function openPhotoDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = () => {
+            const db = request.result;
+
+            if (!db.objectStoreNames.contains(PHOTO_STORE)) {
+                db.createObjectStore(PHOTO_STORE, {
+                    keyPath: "id"
+                });
+            }
+        };
+
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+
+        request.onerror = () => {
+            reject(request.error);
+        };
+    });
 }
 
-function getLatestPhotoAndDate(plant) {
+async function getPhotoFromDB(id) {
+    const db = await openPhotoDB();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PHOTO_STORE, "readonly");
+        const store = transaction.objectStore(PHOTO_STORE);
+        const request = store.get(id);
+
+        request.onsuccess = () => {
+            resolve(request.result ? request.result.src : "");
+        };
+
+        request.onerror = () => {
+            reject(request.error);
+        };
+    });
+}
+
+async function deletePhotoFromDB(id) {
+    const db = await openPhotoDB();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(PHOTO_STORE, "readwrite");
+        const store = transaction.objectStore(PHOTO_STORE);
+
+        store.delete(id);
+
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+    });
+}
+
+function getPhotoSrc(photo) {
+    if (typeof photo === "string") {
+        return photo;
+    }
+
+    if (photo.src) {
+        return photo.src;
+    }
+
+    return "";
+}
+
+async function getLatestPhotoAndDate(plant) {
     const records =
         JSON.parse(localStorage.getItem("records_" + plant.name)) || [];
 
@@ -49,7 +117,13 @@ function getLatestPhotoAndDate(plant) {
     for (const record of sortedRecordsByDate) {
         if (record.photos && record.photos.length > 0) {
             const lastPhoto = record.photos[record.photos.length - 1];
+
             latestPhoto = getPhotoSrc(lastPhoto);
+
+            if (!latestPhoto && lastPhoto.id) {
+                latestPhoto = await getPhotoFromDB(lastPhoto.id);
+            }
+
             break;
         }
     }
@@ -65,16 +139,26 @@ function getLatestPhotoAndDate(plant) {
     };
 }
 
-if (archivedPlants.length === 0) {
-    plantsContainer.innerHTML =
-        "<div class='plant-card'>この年のアーカイブはありません</div>";
-} else {
-    archivedPlants.forEach(plant => {
+async function renderArchivedPlants() {
+    const archivedPlants = plants.filter(plant => {
+        const plantYear = new Date(plant.startDate).getFullYear();
+        return plant.archived && plantYear === year;
+    });
+
+    plantsContainer.innerHTML = "";
+
+    if (archivedPlants.length === 0) {
+        plantsContainer.innerHTML =
+            "<div class='plant-card'>この年のアーカイブはありません</div>";
+        return;
+    }
+
+    for (const plant of archivedPlants) {
         const card = document.createElement("div");
         card.className = "plant-card";
 
         const { latestPhoto, latestDate } =
-            getLatestPhotoAndDate(plant);
+            await getLatestPhotoAndDate(plant);
 
         const displayPhoto =
             plant.coverPhoto || latestPhoto;
@@ -87,9 +171,60 @@ if (archivedPlants.length === 0) {
             }
             <div class="plant-name">${plant.name}</div>
             <div class="plant-updated">${latestDate}</div>
+            <button class="deletePlantBtn">🗑完全削除</button>
         `;
 
         card.style.cursor = "pointer";
+
+        card.querySelector(".deletePlantBtn").addEventListener(
+            "click",
+            async (event) => {
+                event.stopPropagation();
+
+                if (
+                    !confirm(
+                        plant.name +
+                        " を完全削除しますか？\n写真も記録も全部消えます。"
+                    )
+                ) {
+                    return;
+                }
+
+                const records =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "records_" + plant.name
+                        )
+                    ) || [];
+
+                for (const record of records) {
+                    if (!record.photos) continue;
+
+                    for (const photo of record.photos) {
+                        if (photo.id) {
+                            await deletePhotoFromDB(photo.id);
+                        }
+                    }
+                }
+
+                localStorage.removeItem(
+                    "records_" + plant.name
+                );
+
+                plants = plants.filter(
+                    p => p.name !== plant.name
+                );
+
+                localStorage.setItem(
+                    "plants",
+                    JSON.stringify(plants)
+                );
+
+                alert("完全削除しました");
+
+                renderArchivedPlants();
+            }
+        );
 
         card.addEventListener("click", () => {
             window.location.href =
@@ -98,8 +233,11 @@ if (archivedPlants.length === 0) {
         });
 
         plantsContainer.appendChild(card);
-    });
+    }
 }
+
+renderArchivedPlants();
+
 </script>
 
 </body>
