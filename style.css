@@ -149,3 +149,81 @@ button{
     color:#888;
     text-align:center;
 }
+
+/* 記録ページ：タイムライン風 */
+#records{
+    position:relative;
+    margin-top:20px;
+}
+
+#records::before{
+    content:"";
+    position:absolute;
+    left:18px;
+    top:0;
+    bottom:0;
+    width:3px;
+    background:#cfe3cf;
+    border-radius:999px;
+}
+
+#records .plant-card{
+    position:relative;
+    margin-left:28px;
+    text-align:left;
+    border-radius:18px;
+    padding:16px;
+}
+
+#records .plant-card::before{
+    content:"";
+    position:absolute;
+    left:-22px;
+    top:22px;
+    width:15px;
+    height:15px;
+    background:#6fa96f;
+    border:3px solid white;
+    border-radius:50%;
+    box-shadow:0 2px 5px rgba(0,0,0,0.15);
+}
+
+.record-date{
+    text-align:left;
+    font-size:20px;
+    margin-bottom:12px;
+    color:#2f5f2f;
+}
+
+.photo-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    justify-content:initial;
+}
+
+.record-photo{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+    border-radius:14px;
+}
+
+.record-info,
+.record-memo{
+    text-align:left;
+    font-size:15px;
+}
+
+.record-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:6px;
+}
+
+.record-actions button{
+    margin-top:0;
+    padding:10px 6px;
+    font-size:13px;
+    border-radius:10px;
+}
