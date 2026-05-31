@@ -12,6 +12,10 @@
 
 <h1 id="plantName"></h1>
 
+<button id="renamePlantBtn">
+    ✏️植物名変更
+</button>
+
 <button id="addRecordBtn">＋記録追加</button>
 
 <div class="sort-box">
@@ -56,6 +60,12 @@ const setCoverBtn =
     document.getElementById(
         "setCoverBtn"
     );
+
+const renamePlantBtn =
+    document.getElementById(
+        "renamePlantBtn"
+    );
+
 let currentRecordIndex = null;
 let currentPhotoIndex = null;
 
@@ -553,6 +563,79 @@ restorePlantBtn.addEventListener(
 
         window.location.href =
             "index.html";
+
+    }
+);
+
+renamePlantBtn.addEventListener(
+    "click",
+    () => {
+
+        const newName =
+            prompt(
+                "新しい植物名を入力してください",
+                plantName
+            );
+
+        if (
+            !newName ||
+            newName === plantName
+        ) {
+            return;
+        }
+
+        const plants =
+            JSON.parse(
+                localStorage.getItem(
+                    "plants"
+                )
+            ) || [];
+
+        const targetPlant =
+            plants.find(
+                plant =>
+                    plant.name === plantName
+            );
+
+        if (!targetPlant) {
+            return;
+        }
+
+        const oldRecords =
+            localStorage.getItem(
+                "records_" + plantName
+            );
+
+        targetPlant.name =
+            newName;
+
+        localStorage.setItem(
+            "plants",
+            JSON.stringify(plants)
+        );
+
+        if (oldRecords) {
+
+            localStorage.setItem(
+                "records_" + newName,
+                oldRecords
+            );
+
+            localStorage.removeItem(
+                "records_" + plantName
+            );
+
+        }
+
+        alert(
+            "植物名を変更しました"
+        );
+
+        window.location.href =
+            "plant.html?name=" +
+            encodeURIComponent(
+                newName
+            );
 
     }
 );
