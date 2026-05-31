@@ -271,3 +271,70 @@ button{
 #addRecordBtn:active{
     transform:scale(0.95);
 }
+
+body {
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.plant-card {
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.plant-thumb {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+}
+
+.record-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.photo-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.record-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 12px;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 40px;
+        line-height: 1.2;
+    }
+
+    .plant-thumb {
+        height: 170px;
+    }
+
+    .record-photo {
+        width: calc(50% - 6px);
+        height: 140px;
+    }
+
+    .photo-row {
+        gap: 12px;
+    }
+}
