@@ -27,11 +27,6 @@ document.getElementById("yearTitle").textContent = year + "年";
 const plantsContainer = document.getElementById("plants");
 let plants = JSON.parse(localStorage.getItem("plants")) || [];
 
-const archivedPlants = plants.filter(plant => {
-    const plantYear = new Date(plant.startDate).getFullYear();
-    return plant.archived && plantYear === year;
-});
-
 const DB_NAME = "plantPhotoDB";
 const DB_VERSION = 1;
 const PHOTO_STORE = "photos";
@@ -160,7 +155,19 @@ async function renderArchivedPlants() {
         const { latestPhoto, latestDate } =
             await getLatestPhotoAndDate(plant);
 
-        const displayPhoto = latestPhoto;
+        let displayPhoto = "";
+
+if (plant.coverPhotoId) {
+    displayPhoto = await getPhotoFromDB(plant.coverPhotoId);
+}
+
+if (!displayPhoto && plant.coverPhoto) {
+    displayPhoto = plant.coverPhoto;
+}
+
+if (!displayPhoto) {
+    displayPhoto = latestPhoto;
+}
 
         card.innerHTML = `
             ${
