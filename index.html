@@ -11,52 +11,32 @@
     <h1>🌱植物日記</h1>
 
     <button id="addPlantBtn" class="main-add-btn">
-    ＋植物追加
-</button>
-
-<div class="search-wrapper">
-    <input
-        id="plantSearchInput"
-        class="plant-search"
-        type="search"
-        placeholder="🔍 植物を検索"
-    />
-</div>
-
-<div class="backup-actions">
-    <button id="exportBackupBtn">💾バックアップ</button>
-    <button id="importBackupBtn">📥復元</button>
-</div>
-
-<a href="archive.html" class="archive-link">
-    <button>
-        📚アーカイブ
+        ＋植物追加
     </button>
-</a>
 
- <div id="plants"></div>
+    <div class="search-wrapper">
+        <input
+            id="plantSearchInput"
+            class="plant-search"
+            type="search"
+            placeholder="🔍 植物を検索"
+        />
+    </div>
 
-    <script src="app.js?v=3">
+    <div class="backup-actions">
+        <button id="exportBackupBtn">💾バックアップ</button>
+        <button id="importBackupBtn">📥復元</button>
+    </div>
 
-const plantSearchInput = document.getElementById("plantSearchInput");
+    <a href="archive.html" class="archive-link">
+        <button>
+            📚アーカイブ
+        </button>
+    </a>
 
-if (plantSearchInput) {
-    plantSearchInput.addEventListener("input", function () {
-        const keyword = this.value.toLowerCase();
-        const cards = document.querySelectorAll("#plants .plant-card");
+    <div id="plants"></div>
 
-        cards.forEach(card => {
-            const name = card.querySelector(".plant-name")?.textContent.toLowerCase() || "";
+    <script src="app.js?v=3"></script>
 
-            if (name.includes(keyword)) {
-                card.style.display = "";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    });
-}
-
-</script>
 </body>
 </html>
