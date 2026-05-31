@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アーカイブ年別</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a href="archive.html">←アーカイブへ戻る</a>
+
+<h1 id="yearTitle"></h1>
+
+<div id="plants"></div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const year = Number(params.get("year"));
+
+if (!year) {
+    window.location.href = "archive.html";
+}
+
+document.getElementById("yearTitle").textContent = year + "年";
+
+const plantsContainer = document.getElementById("plants");
+const plants = JSON.parse(localStorage.getItem("plants")) || [];
+
+const archivedPlants = plants.filter(plant => {
+    const plantYear = new Date(plant.startDate).getFullYear();
+    return plant.archived && plantYear === year;
+});
+
+function getPhotoSrc(photo) {
+    return typeof photo === "string" ? photo : photo.src;
+}
+
+function getLatestPhotoAndDate(plant) {
+    const records =
+        JSON.parse(localStorage.getItem("records_" + plant.name)) || [];
+
+    const sortedRecordsByDate = [...records].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+    });
+
+    let latestPhoto = null;
+
+    for (const record of sortedRecordsByDate) {
+        if (record.photos && record.photos.length > 0) {
+            const lastPhoto = record.photos[record.photos.length - 1];
+            latestPhoto = getPhotoSrc(lastPhoto);
+            break;
+        }
+    }
+
+    const latestDate =
+        sortedRecordsByDate.length > 0
+            ? sortedRecordsByDate[0].date
+            : "記録なし";
+
+    return {
+        latestPhoto,
+        latestDate
+    };
+}
+
+if (archivedPlants.length === 0) {
+    plantsContainer.innerHTML =
+        "<div class='plant-card'>この年のアーカイブはありません</div>";
+} else {
+    archivedPlants.forEach(plant => {
+        const card = document.createElement("div");
+        card.className = "plant-card";
+
+        const { latestPhoto, latestDate } =
+            getLatestPhotoAndDate(plant);
+
+        const displayPhoto =
+            plant.coverPhoto || latestPhoto;
+
+        card.innerHTML = `
+            ${
+                displayPhoto
+                    ? `<img src="${displayPhoto}" class="plant-thumb">`
+                    : `<div class="plant-thumb placeholder">🌱</div>`
+            }
+            <div class="plant-name">${plant.name}</div>
+            <div class="plant-updated">${latestDate}</div>
+        `;
+
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href =
+                "plant.html?name=" +
+                encodeURIComponent(plant.name);
+        });
+
+        plantsContainer.appendChild(card);
+    });
+}
+</script>
+
+</body>
+</html>

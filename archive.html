@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アーカイブ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a href="index.html">←一覧へ戻る</a>
+
+<h1>📚アーカイブ</h1>
+
+<div id="archiveYears"></div>
+
+<script>
+const archiveYears = document.getElementById("archiveYears");
+
+const plants = JSON.parse(localStorage.getItem("plants")) || [];
+
+const archivedPlants = plants.filter(plant => plant.archived);
+
+const years = [
+    ...new Set(
+        archivedPlants.map(plant => {
+            const date = new Date(plant.startDate);
+            return date.getFullYear();
+        })
+    )
+].sort((a, b) => b - a);
+
+if (years.length === 0) {
+    archiveYears.innerHTML =
+        "<div class='plant-card'>アーカイブはまだありません</div>";
+} else {
+    years.forEach(year => {
+        const card = document.createElement("div");
+        card.className = "plant-card";
+        card.textContent = year + "年";
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href =
+                "archive-year.html?year=" + year;
+        });
+
+        archiveYears.appendChild(card);
+    });
+}
+</script>
+
+</body>
+</html>
