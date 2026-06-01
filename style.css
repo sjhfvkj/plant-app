@@ -309,3 +309,50 @@ button {
     font-size: 18px;
     box-sizing: border-box;
 }
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 10px;
+}
+
+.unclassified-item {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 4px solid transparent;
+}
+
+.unclassified-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+}
+
+.unclassified-item.selected {
+    border-color: #7bcf8a;
+}
+
+.check-mark {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #7bcf8a;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.unclassified-item.selected .check-mark {
+    display: block;
+}
