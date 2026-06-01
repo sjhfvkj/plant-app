@@ -416,17 +416,27 @@ button {
 
 .modal-close-btn {
     position: absolute;
-    top: 14px;
+    top: 16px;
     right: 16px;
-    width: 48px;
-    height: 48px;
+
+    width: 52px;
+    height: 52px;
+
     border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.16);
+    border: 2px solid rgba(255,255,255,0.8);
+
+    background: rgba(0,0,0,0.65);
+
     color: white;
-    font-size: 36px;
-    line-height: 1;
+    font-size: 34px;
+    font-weight: 300;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     cursor: pointer;
+    z-index: 10000;
 }
 
 .modal-action-row {
@@ -464,12 +474,12 @@ button {
     }
 
     .modal-close-btn {
-        top: 10px;
-        right: 10px;
-        width: 42px;
-        height: 42px;
-        font-size: 32px;
-    }
+    top: 12px;
+    right: 12px;
+    width: 52px;
+    height: 52px;
+    font-size: 34px;
+}
 
     .modal-action-row {
         gap: 6px;
