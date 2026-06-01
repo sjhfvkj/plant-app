@@ -38,7 +38,9 @@
     ⭐表紙に設定
 </button>
     <button id="deletePhotoBtn">この写真を削除</button>
+　　<button id="moveToUnclassifiedBtn">未分類に戻す</button>
 </div>
+
 
 <script>
 const params = new URLSearchParams(window.location.search);
@@ -56,6 +58,10 @@ const photoModal = document.getElementById("photoModal");
 const modalImage = document.getElementById("modalImage");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const deletePhotoBtn = document.getElementById("deletePhotoBtn");
+
+const moveToUnclassifiedBtn =
+    document.getElementById("moveToUnclassifiedBtn");
+
 const setCoverBtn =
     document.getElementById(
         "setCoverBtn"
@@ -483,6 +489,35 @@ setCoverBtn.addEventListener("click", async () => {
 });
 
 deletePhotoBtn.addEventListener("click", async () => {
+    moveToUnclassifiedBtn.addEventListener("click", async () => {
+    if (!confirm("この写真を未分類写真に戻しますか？")) return;
+
+    const records = loadRecords();
+
+    const movedPhoto =
+        records[currentRecordIndex].photos[currentPhotoIndex];
+
+    let unclassifiedPhotos =
+        JSON.parse(localStorage.getItem("unclassifiedPhotos")) || [];
+
+    unclassifiedPhotos.push(movedPhoto);
+
+    localStorage.setItem(
+        "unclassifiedPhotos",
+        JSON.stringify(unclassifiedPhotos)
+    );
+
+    records[currentRecordIndex].photos.splice(currentPhotoIndex, 1);
+
+    saveRecords(records);
+
+    photoModal.style.display = "none";
+
+    renderRecords();
+
+    alert("未分類写真に戻しました");
+});
+    
     if (!confirm("この写真を削除しますか？")) return;
 
     const records = loadRecords();
