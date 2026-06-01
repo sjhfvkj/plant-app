@@ -356,3 +356,27 @@ button {
 .unclassified-item.selected .check-mark {
     display: block;
 }
+
+.photo-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.photo-modal img {
+    max-width: 95vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 16px;
+}
+
+.photo-modal button {
+    margin-bottom: 16px;
+    font-size: 18px;
+}
