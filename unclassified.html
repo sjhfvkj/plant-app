@@ -43,6 +43,11 @@
 
 <div id="unclassifiedPhotos" class="photo-grid"></div>
 
+<div id="photoModal" class="photo-modal">
+    <button id="closeModalBtn">閉じる</button>
+    <img id="modalImage">
+</div>
+
 <script>
 const addUnclassifiedBtn = document.getElementById("addUnclassifiedBtn");
 const unclassifiedPhotosContainer = document.getElementById("unclassifiedPhotos");
@@ -54,6 +59,10 @@ const bulkMoveBtn = document.getElementById("bulkMoveBtn");
 const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
 const selectAllBtn = document.getElementById("selectAllBtn");
 const clearSelectBtn = document.getElementById("clearSelectBtn");
+
+const photoModal = document.getElementById("photoModal");
+const modalImage = document.getElementById("modalImage");
+const closeModalBtn = document.getElementById("closeModalBtn");
 
 const DB_NAME = "plantPhotoDB";
 const DB_VERSION = 1;
@@ -214,8 +223,13 @@ async function renderUnclassifiedPhotos() {
         `;
 
         item.addEventListener("click", () => {
-            item.classList.toggle("selected");
-        });
+    item.classList.toggle("selected");
+});
+
+item.addEventListener("dblclick", () => {
+    modalImage.src = src;
+    photoModal.style.display = "flex";
+});
 
         unclassifiedPhotosContainer.appendChild(item);
     }
@@ -330,6 +344,16 @@ selectAllBtn.addEventListener("click", () => {
     document.querySelectorAll(".unclassified-item").forEach(item => {
         item.classList.add("selected");
     });
+});
+
+closeModalBtn.addEventListener("click", () => {
+    photoModal.style.display = "none";
+});
+
+photoModal.addEventListener("click", (event) => {
+    if (event.target === photoModal) {
+        photoModal.style.display = "none";
+    }
 });
 
 clearSelectBtn.addEventListener("click", () => {
