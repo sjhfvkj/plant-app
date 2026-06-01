@@ -32,13 +32,17 @@
 <div id="records"></div>
 
 <div id="photoModal" class="photo-modal">
-    <button id="closeModalBtn">閉じる</button>
-    <img id="modalImage">
-    <button id="setCoverBtn">
-    ⭐表紙に設定
-</button>
-    <button id="deletePhotoBtn">この写真を削除</button>
-　　<button id="moveToUnclassifiedBtn">未分類に戻す</button>
+    <div class="photo-modal-content">
+        <button id="closeModalBtn" class="modal-close-btn">×</button>
+
+        <img id="modalImage">
+
+        <div class="modal-action-row">
+            <button id="setCoverBtn">⭐ 表紙に設定</button>
+            <button id="deletePhotoBtn">🗑 削除</button>
+            <button id="moveToUnclassifiedBtn">↩ 未分類へ</button>
+        </div>
+    </div>
 </div>
 
 
