@@ -312,8 +312,32 @@ plantSearchInput.addEventListener("input", () => {
 
 renderPlants();
 
+const unclassifiedBtn =
+    document.getElementById(
+        "unclassifiedBtn"
+    );
+
+if (unclassifiedBtn) {
+
+    const unclassifiedPhotos =
+        JSON.parse(
+            localStorage.getItem(
+                "unclassifiedPhotos"
+            )
+        ) || [];
+
+    unclassifiedBtn.textContent =
+        `📷未分類写真 (${unclassifiedPhotos.length}枚)`;
+
+}
+
 const exportBackupBtn = document.getElementById("exportBackupBtn");
 const importBackupBtn = document.getElementById("importBackupBtn");
+
+const unclassifiedPhotos =
+    JSON.parse(
+        localStorage.getItem("unclassifiedPhotos")
+    ) || [];
 
 async function getAllPhotosFromDB() {
     const db = await openPhotoDB();
