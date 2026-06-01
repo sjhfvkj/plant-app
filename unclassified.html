@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>未分類写真</title>
-    <link rel="stylesheet" href="style.css?v=13">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>未分類写真</title>
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -19,34 +19,29 @@
 <div class="plant-card">
     <h3>まとめて移動</h3>
 
-    <button id="selectAllBtn">全部選択</button>
-    <button id="clearSelectBtn">選択解除</button>
-
-    <br><br>
-
-    <label>植物を選ぶ</label><br>
     <select id="bulkPlantSelect">
-        <option value="">選んでください</option>
+        <option value="">植物を選ぶ</option>
     </select>
 
-    <br><br>
-
-    <label>日付を選ぶ</label><br>
     <input id="bulkDateInput" type="text">
 
-    <br><br>
-
-    <label>メモ</label><br>
-    <textarea id="bulkMemoInput" placeholder="必要ならメモを書く"></textarea>
-
-    <br><br>
+    <textarea id="bulkMemoInput" placeholder="メモ"></textarea>
 
     <button id="bulkMoveBtn">
-        選択した写真をまとめて移動
+        選択した写真を移動
     </button>
+
+    <button id="bulkDeleteBtn">
+        選択した写真を削除
+    </button>
+
+    <br><br>
+
+    <button id="selectAllBtn">全部選択</button>
+    <button id="clearSelectBtn">解除</button>
 </div>
 
-<div id="unclassifiedPhotos"></div>
+<div id="unclassifiedPhotos" class="photo-grid"></div>
 
 <script>
 const addUnclassifiedBtn = document.getElementById("addUnclassifiedBtn");
@@ -56,6 +51,7 @@ const bulkPlantSelect = document.getElementById("bulkPlantSelect");
 const bulkDateInput = document.getElementById("bulkDateInput");
 const bulkMemoInput = document.getElementById("bulkMemoInput");
 const bulkMoveBtn = document.getElementById("bulkMoveBtn");
+const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
 const selectAllBtn = document.getElementById("selectAllBtn");
 const clearSelectBtn = document.getElementById("clearSelectBtn");
 
@@ -70,21 +66,13 @@ function openPhotoDB() {
 
         request.onupgradeneeded = () => {
             const db = request.result;
-
             if (!db.objectStoreNames.contains(PHOTO_STORE)) {
-                db.createObjectStore(PHOTO_STORE, {
-                    keyPath: "id"
-                });
+                db.createObjectStore(PHOTO_STORE, { keyPath: "id" });
             }
         };
 
-        request.onsuccess = () => {
-            resolve(request.result);
-        };
-
-        request.onerror = () => {
-            reject(request.error);
-        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
     });
 }
 
@@ -102,13 +90,8 @@ async function savePhotoToDB(src) {
 
         store.add(photo);
 
-        transaction.oncomplete = () => {
-            resolve(photo.id);
-        };
-
-        transaction.onerror = () => {
-            reject(transaction.error);
-        };
+        transaction.oncomplete = () => resolve(photo.id);
+        transaction.onerror = () => reject(transaction.error);
     });
 }
 
@@ -120,13 +103,8 @@ async function getPhotoFromDB(id) {
         const store = transaction.objectStore(PHOTO_STORE);
         const request = store.get(id);
 
-        request.onsuccess = () => {
-            resolve(request.result ? request.result.src : "");
-        };
-
-        request.onerror = () => {
-            reject(request.error);
-        };
+        request.onsuccess = () => resolve(request.result ? request.result.src : "");
+        request.onerror = () => reject(request.error);
     });
 }
 
@@ -139,13 +117,8 @@ async function deletePhotoFromDB(id) {
 
         store.delete(id);
 
-        transaction.oncomplete = () => {
-            resolve();
-        };
-
-        transaction.onerror = () => {
-            reject(transaction.error);
-        };
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
     });
 }
 
@@ -208,14 +181,13 @@ function renderPlantOptions() {
         .join("");
 
     bulkPlantSelect.innerHTML = `
-        <option value="">選んでください</option>
+        <option value="">植物を選ぶ</option>
         ${plantOptions}
     `;
 }
 
 async function renderUnclassifiedPhotos() {
     const photos = loadUnclassifiedPhotos();
-    const plants = loadPlants();
 
     unclassifiedPhotosContainer.innerHTML = "";
 
@@ -230,82 +202,29 @@ async function renderUnclassifiedPhotos() {
     }
 
     for (const photo of photos) {
-        const card = document.createElement("div");
-        card.className = "plant-card";
+        const item = document.createElement("div");
+        item.className = "unclassified-item";
+        item.dataset.photoId = photo.id;
 
         const src = await getPhotoFromDB(photo.id);
 
-        const plantOptions = plants
-            .filter(plant => !plant.archived)
-            .map(plant => `<option value="${plant.name}">${plant.name}</option>`)
-            .join("");
-
-        card.innerHTML = `
-            <label>
-                <input type="checkbox" class="photoCheck" value="${photo.id}">
-                選択する
-            </label>
-
-            <br><br>
-
-            <img src="${src}" class="record-photo">
-
-            <br><br>
-
-            <label>植物を選ぶ</label><br>
-            <select class="plantSelect">
-                <option value="">選んでください</option>
-                ${plantOptions}
-            </select>
-
-            <br><br>
-
-            <label>日付を選ぶ</label><br>
-            <input class="dateInput" type="text" value="${photo.date || getTodayString()}">
-
-            <br><br>
-
-            <label>メモ</label><br>
-            <textarea class="memoInput" placeholder="必要ならメモを書く"></textarea>
-
-            <br><br>
-
-            <button class="moveBtn">この植物に移動</button>
-            <button class="deleteBtn">削除</button>
+        item.innerHTML = `
+            <div class="check-mark">✓</div>
+            <img src="${src}" class="unclassified-thumb">
         `;
 
-        card.querySelector(".moveBtn").addEventListener("click", () => {
-            const selectedPlant = card.querySelector(".plantSelect").value;
-            const selectedDate = card.querySelector(".dateInput").value;
-            const memo = card.querySelector(".memoInput").value;
-
-            if (!selectedPlant) {
-                alert("植物を選んでください");
-                return;
-            }
-
-            if (!selectedDate) {
-                alert("日付を入力してください");
-                return;
-            }
-
-            movePhotosToPlant([photo.id], selectedPlant, selectedDate, memo);
+        item.addEventListener("click", () => {
+            item.classList.toggle("selected");
         });
 
-        card.querySelector(".deleteBtn").addEventListener("click", async () => {
-            if (!confirm("この未分類写真を削除しますか？")) return;
-
-            await deletePhotoFromDB(photo.id);
-
-            const updatedPhotos =
-                loadUnclassifiedPhotos().filter(item => item.id !== photo.id);
-
-            saveUnclassifiedPhotos(updatedPhotos);
-            renderUnclassifiedPhotos();
-        });
-
-        unclassifiedPhotosContainer.appendChild(card);
+        unclassifiedPhotosContainer.appendChild(item);
     }
+}
+
+function getSelectedPhotoIds() {
+    return Array.from(
+        document.querySelectorAll(".unclassified-item.selected")
+    ).map(item => item.dataset.photoId);
 }
 
 function movePhotosToPlant(photoIds, plantName, date, memo) {
@@ -351,21 +270,18 @@ function movePhotosToPlant(photoIds, plantName, date, memo) {
 
     saveUnclassifiedPhotos(updatedPhotos);
 
-    alert("選択した写真を植物の記録へ移動しました！");
+    alert("選択した写真を移動しました！");
     renderUnclassifiedPhotos();
 }
 
 bulkMoveBtn.addEventListener("click", () => {
-    const checkedPhotos = Array.from(
-        document.querySelectorAll(".photoCheck:checked")
-    ).map(check => check.value);
-
+    const selectedPhotoIds = getSelectedPhotoIds();
     const selectedPlant = bulkPlantSelect.value;
     const selectedDate = bulkDateInput.value;
     const memo = bulkMemoInput.value;
 
-    if (checkedPhotos.length === 0) {
-        alert("移動する写真を選んでください");
+    if (selectedPhotoIds.length === 0) {
+        alert("写真を選んでください");
         return;
     }
 
@@ -380,7 +296,7 @@ bulkMoveBtn.addEventListener("click", () => {
     }
 
     movePhotosToPlant(
-        checkedPhotos,
+        selectedPhotoIds,
         selectedPlant,
         selectedDate,
         memo
@@ -389,15 +305,36 @@ bulkMoveBtn.addEventListener("click", () => {
     bulkMemoInput.value = "";
 });
 
+bulkDeleteBtn.addEventListener("click", async () => {
+    const selectedPhotoIds = getSelectedPhotoIds();
+
+    if (selectedPhotoIds.length === 0) {
+        alert("削除する写真を選んでください");
+        return;
+    }
+
+    if (!confirm("選択した写真を削除しますか？")) return;
+
+    for (const photoId of selectedPhotoIds) {
+        await deletePhotoFromDB(photoId);
+    }
+
+    const updatedPhotos =
+        loadUnclassifiedPhotos().filter(photo => !selectedPhotoIds.includes(photo.id));
+
+    saveUnclassifiedPhotos(updatedPhotos);
+    renderUnclassifiedPhotos();
+});
+
 selectAllBtn.addEventListener("click", () => {
-    document.querySelectorAll(".photoCheck").forEach(check => {
-        check.checked = true;
+    document.querySelectorAll(".unclassified-item").forEach(item => {
+        item.classList.add("selected");
     });
 });
 
 clearSelectBtn.addEventListener("click", () => {
-    document.querySelectorAll(".photoCheck").forEach(check => {
-        check.checked = false;
+    document.querySelectorAll(".unclassified-item").forEach(item => {
+        item.classList.remove("selected");
     });
 });
 
