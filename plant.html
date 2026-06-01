@@ -492,8 +492,7 @@ setCoverBtn.addEventListener("click", async () => {
     alert("表紙写真を設定しました⭐");
 });
 
-deletePhotoBtn.addEventListener("click", async () => {
-    moveToUnclassifiedBtn.addEventListener("click", async () => {
+moveToUnclassifiedBtn.addEventListener("click", async () => {
     if (!confirm("この写真を未分類写真に戻しますか？")) return;
 
     const records = loadRecords();
@@ -521,7 +520,8 @@ deletePhotoBtn.addEventListener("click", async () => {
 
     alert("未分類写真に戻しました");
 });
-    
+
+deletePhotoBtn.addEventListener("click", async () => {
     if (!confirm("この写真を削除しますか？")) return;
 
     const records = loadRecords();
