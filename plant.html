@@ -263,6 +263,8 @@ function compressImage(file, maxWidth = 700, quality = 0.45) {
 function renderRecords() {
 
     const records = loadRecords();
+    const oldestDate = [...records]
+    .sort((a, b) => new Date(a.date) - new Date(b.date))[0]?.date;
 
 const displayRecords = [...records].sort((a, b) => {
 
@@ -286,6 +288,14 @@ const displayRecords = [...records].sort((a, b) => {
     }
 
    displayRecords.forEach((record) => {
+   const growDay = oldestDate
+       ? Math.floor(
+           (new Date(record.date) - new Date(oldestDate))
+           / (1000 * 60 * 60 * 24)
+         ) + 1
+       : 1;
+
+
     const recordIndex = records.indexOf(record);
         const card = document.createElement("div");
         card.className = "plant-card";
@@ -307,9 +317,15 @@ data-photo-id="${photo.id || ''}"
             .join("");
 
         card.innerHTML = `
-            <div class="record-date">
-                ${record.date}
-            </div>
+    <div class="record-header">
+        <div class="record-date">
+            ${record.date}
+        </div>
+
+        <div class="grow-day">
+            ${growDay}日目
+        </div>
+    </div>
             <br><br>
             <div class="photo-row">
                 ${imagesHtml}
