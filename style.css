@@ -526,3 +526,17 @@ button {
 
     z-index: 10001 !important;
 }
+
+.record-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.grow-day {
+    border: 1px solid #999;
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 16px;
+    background: white;
+}
